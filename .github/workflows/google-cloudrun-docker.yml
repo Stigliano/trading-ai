@@ -45,12 +45,12 @@ jobs:
 
     steps:
       - name: 'Checkout Repository'
-        uses: 'actions/checkout@v4' # Retrieves the latest code from the repository
+        uses: actions/checkout@v4 # Retrieves the latest code from the repository
 
       # Authenticate to Google Cloud using Workload Identity Federation
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2'
+        uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
           service_account: 'github-actions@trading90.iam.gserviceaccount.com' # Service account used for authentication
@@ -69,7 +69,7 @@ jobs:
 
       # Deploy the Docker image to Cloud Run
       - name: 'Deploy to Cloud Run'
-        uses: 'google-github-actions/deploy-cloudrun@v2'
+        uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: '${{ env.SERVICE }}'
           region: '${{ env.REGION }}'
@@ -78,4 +78,3 @@ jobs:
       # Display Cloud Run service URL
       - name: 'Show Cloud Run URL'
         run: echo "Cloud Run URL: ${{ steps.deploy.outputs.url }}"
-
