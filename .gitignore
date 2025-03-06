@@ -5,3 +5,5 @@ __pycache__/
 *.log
 *.sqlite3
 venv/
+google-cloud-sdk/
+google-cloud-sdk-441.0.0-linux-x86_64.tar.gz
