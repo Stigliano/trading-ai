@@ -69,4 +69,3 @@ jobs:
       - name: 'Conferma completamento'
         run: |
           echo "✅ Il workflow è stato completato con successo!"
-
