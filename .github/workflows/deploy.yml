@@ -30,8 +30,10 @@ jobs:
       - name: 'Autenticazione su Google Cloud'
         run: |
           echo "🔍 Controllo che il segreto sia stato passato..."
-          if [[ -z "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" ]]; then
-            echo "❌ ERRORE: Il segreto GCP_SERVICE_ACCOUNT_KEY non è stato impostato in GitHub Secrets!"
+          SECRET_LENGTH=$(echo -n "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | wc -c)
+
+          if [[ $SECRET_LENGTH -lt 10 ]]; then
+            echo "❌ ERRORE: Il segreto GCP_SERVICE_ACCOUNT_KEY non è stato impostato correttamente in GitHub Secrets!"
             exit 1
           fi
 
