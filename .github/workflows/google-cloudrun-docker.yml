@@ -1,4 +1,4 @@
-name: 'Build and Deploy to Cloud Run'
+name: 'Build and Deploy using deploy.sh'
 
 on:
   push:
@@ -32,35 +32,18 @@ jobs:
         run: |
           echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > $HOME/gcp-key.json
           gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
-
-      # 🔹 3️⃣ Configura Docker per autenticarsi su Google Artifact Registry
-      - name: 'Docker Authentication'
-        run: |
+          gcloud config set project ${{ env.PROJECT_ID }}
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+        env:
+          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
-      # 🔹 4️⃣ Costruisce e carica l'immagine Docker su Google Artifact Registry
-      - name: 'Build e Push Docker Image'
+      # 🔹 3️⃣ Rendi eseguibile lo script deploy.sh
+      - name: 'Rendi eseguibile deploy.sh'
+        run: chmod +x deploy.sh
+
+      # 🔹 4️⃣ Esegui deploy.sh e salva log
+      - name: 'Esegui deploy.sh e salva log'
         run: |
-          IMAGE_TAG="${{ github.sha }}"  # Usa l'hash del commit come tag dell'immagine
-          IMAGE_NAME="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${IMAGE_TAG}"
-          
-          echo "🚀 Costruzione dell'immagine Docker: $IMAGE_NAME"
-          docker build --tag "$IMAGE_NAME" .
-          docker push "$IMAGE_NAME"
-          echo "✅ Immagine Docker caricata: $IMAGE_NAME"
-
-      # 🔹 5️⃣ Esegue il deploy dell'immagine su Cloud Run
-      - name: 'Deploy su Cloud Run'
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: "${{ env.SERVICE }}-${{ env.ENVIRONMENT }}"  # Nome del servizio per ambiente Dev/Prod
-          region: ${{ env.REGION }}
-          image: "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}"
-          flags: "--platform managed --allow-unauthenticated"  # Permette accesso pubblico all'API (può essere rimosso per maggiore sicurezza)
-
-      # 🔹 6️⃣ Mostra l'URL del servizio dopo il deploy
-      - name: 'Mostra URL del Servizio'
-        run: |
-          echo "✅ Deploy completato con successo!"
-          echo "🌍 Cloud Run URL: ${{ steps.deploy.outputs.url }}"
+          mkdir -p /home/don/trading-ai/.github/log
+          ./deploy.sh | tee /home/don/trading-ai/.github/log/github-actions-log.txt
 
