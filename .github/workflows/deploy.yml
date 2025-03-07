@@ -1,4 +1,4 @@
-name: 'Build and Deploy using deploy.sh'
+name: 'Esegui deploy.sh per il Deploy su Cloud Run'
 
 on:
   push:
@@ -26,24 +26,16 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@v4
 
-      # 🔹 2️⃣ Autenticazione con Google Cloud utilizzando GitHub Secret
-      - id: auth
-        name: 'Autenticazione su Google Cloud'
+      # 🔹 2️⃣ Autenticazione con Google Cloud
+      - name: 'Autenticazione su Google Cloud'
         run: |
           echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > $HOME/gcp-key.json
           gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
-          gcloud config set project ${{ env.PROJECT_ID }}
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
-        env:
-          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
-      # 🔹 3️⃣ Rendi eseguibile lo script deploy.sh
-      - name: 'Rendi eseguibile deploy.sh'
-        run: chmod +x deploy.sh
-
-      # 🔹 4️⃣ Esegui deploy.sh e salva log
-      - name: 'Esegui deploy.sh e salva log'
+      # 🔹 3️⃣ Concede permessi di esecuzione e avvia `deploy.sh`
+      - name: 'Esegui deploy.sh'
         run: |
-          mkdir -p /home/don/trading-ai/.github/log
-          ./deploy.sh | tee /home/don/trading-ai/.github/log/github-actions-log.txt
+          chmod +x deploy.sh
+          ./deploy.sh
 
