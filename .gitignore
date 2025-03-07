@@ -15,3 +15,4 @@ github-actions-key.json
 .github/log/
 
 terraform/credentials.json
+terraform/.terraform/
