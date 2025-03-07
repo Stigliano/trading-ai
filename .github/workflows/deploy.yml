@@ -36,7 +36,7 @@ jobs:
           fi
 
           echo "🔑 Scrittura della chiave JSON su file..."
-          echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > $HOME/gcp-key.json
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > $HOME/gcp-key.json
 
           echo "📂 Verifica che il file JSON sia stato creato correttamente..."
           if [[ ! -s "$HOME/gcp-key.json" ]]; then
