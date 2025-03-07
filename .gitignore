@@ -11,3 +11,4 @@ venv/
 google-cloud-sdk/
 google-cloud-sdk-441.0.0-linux-x86_64.tar.gz
 google-cloud-sdk/bin/anthoscli
+github-actions-key.json
