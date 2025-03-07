@@ -14,3 +14,4 @@ google-cloud-sdk/bin/anthoscli
 github-actions-key.json
 .github/log/
 
+terraform/credentials.json
