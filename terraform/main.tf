@@ -1,23 +1,22 @@
-provider "google" {
-  project = "trading-ai-project"
-  region  = "us-central1"
+module "cloud_run" {
+  source                 = "./cloud_run"
+  project_id             = var.project_id
+  cloud_run_service_name = var.cloud_run_service_name
+  region                 = var.region
 }
 
-resource "google_compute_instance" "trading_ai" {
-  name         = "trading-ai-instance"
-  machine_type = "n1-standard-2"
-  zone         = "us-central1-a"
+module "sql_database" {
+  source           = "./sql_database"
+  project_id       = var.project_id
+  db_instance_name = var.db_instance_name
+  region           = var.region
+  db_user          = var.db_user
+  db_password      = var.db_password
+  db_name          = var.db_name
+}
 
-  boot_disk {
-    initialize_params {
-      image = "ubuntu-2004-focal-v20230606"
-      size  = 50
-      type  = "pd-balanced"
-    }
-  }
-
-  network_interface {
-    network = "default"
-    access_config {}
-  }
+module "storage" {
+  source     = "./storage"
+  project_id = var.project_id
+  region     = var.region
 }
