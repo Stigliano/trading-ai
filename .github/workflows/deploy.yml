@@ -18,54 +18,61 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
+      contents: write
       id-token: write
 
     steps:
-      # 🔹 1️⃣ Checkout Repository
+      # 🔹 1️⃣ Scarica il codice del repository
       - name: 'Checkout Repository'
         uses: actions/checkout@v4
 
-      # 🔹 2️⃣ Controllo e autenticazione su Google Cloud
+      # 🔹 2️⃣ Autenticazione su Google Cloud
       - name: 'Autenticazione su Google Cloud'
         run: |
-          echo "🔍 Controllo che il segreto sia stato passato..."
+          echo "🔍 Controllo presenza del segreto..."
           if [[ -z "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" ]]; then
-            echo "❌ ERRORE: Il segreto GCP_SERVICE_ACCOUNT_KEY non è stato impostato correttamente in GitHub Secrets!"
+            echo "❌ ERRORE: Il segreto GCP_SERVICE_ACCOUNT_KEY non è stato impostato!"
             exit 1
           fi
 
-          echo "🔑 Scrittura della chiave JSON su file..."
+          echo "🔑 Scrittura chiave JSON..."
           echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > $HOME/gcp-key.json
 
-          echo "📂 Verifica che il file JSON sia stato creato correttamente..."
+          echo "📂 Verifica file JSON..."
           if [[ ! -s "$HOME/gcp-key.json" ]]; then
-            echo "❌ ERRORE: Il file JSON della chiave di servizio è vuoto o non valido!"
+            echo "❌ ERRORE: Il file JSON è vuoto o invalido!"
             exit 1
           fi
 
-          echo "🔐 Autenticazione su Google Cloud..."
-          gcloud auth activate-service-account --key-file=$HOME/gcp-key.json || { echo "❌ ERRORE: Autenticazione fallita!"; exit 1; }
+          echo "🔐 Autenticazione GCloud..."
+          gcloud auth activate-service-account --key-file=$HOME/gcp-key.json || { echo "❌ Autenticazione fallita!"; exit 1; }
 
-          echo "🔗 Configurazione di Docker per Google Artifact Registry..."
-          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev || { echo "❌ ERRORE: Configurazione Docker fallita!"; exit 1; }
+          echo "🔗 Configurazione Docker per Artifact Registry..."
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev || { echo "❌ ERRORE configurazione Docker!"; exit 1; }
 
-      # 🔹 3️⃣ Controllo esistenza di deploy.sh ed esecuzione
-      - name: 'Verifica ed esegui deploy.sh'
+      # 🔹 3️⃣ Setup GitHub CLI per deploy.sh
+      - name: 'Setup GitHub CLI'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "📂 Controllo se deploy.sh esiste..."
+          gh auth setup-git
+
+      # 🔹 4️⃣ Controlla e avvia deploy.sh
+      - name: 'Verifica ed esegui deploy.sh'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📄 Controllo deploy.sh..."
           if [[ ! -f "deploy.sh" ]]; then
-            echo "❌ ERRORE: Il file deploy.sh non esiste nella directory!"
+            echo "❌ ERRORE: deploy.sh non trovato!"
             exit 1
           fi
 
-          echo "✅ Il file deploy.sh esiste. Concedo permessi di esecuzione..."
           chmod +x deploy.sh
+          echo "🚀 Lancio deploy.sh..."
+          ./deploy.sh || { echo "❌ ERRORE: deploy.sh fallito!"; exit 1; }
 
-          echo "🚀 Avvio deploy.sh..."
-          ./deploy.sh || { echo "❌ ERRORE: Il deploy è fallito!"; exit 1; }
-
-      # 🔹 4️⃣ Messaggio finale di successo
+      # 🔹 4️⃣ Conferma completamento
       - name: 'Conferma completamento'
         run: |
           echo "✅ Il workflow è stato completato con successo!"
