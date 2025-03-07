@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Configurazioni
-REPO_DIR="/home/don/trading-ai"
+REPO_DIR="$(pwd)"
 LOG_DIR="$REPO_DIR/.github/log"
 LOG_FILE="$LOG_DIR/github-actions-log.txt"
 GITHUB_REPO="Stigliano/trading-ai"
-GITHUB_BRANCH="main"
+GITHUB_BRANCH="${GITHUB_REF##*/}"  # Determina automaticamente branch (main/dev)
 GCLOUD_PROJECT="trading90"
 SERVICE_NAME="trading-ai-service"
 REGION="us-central1"
@@ -16,9 +16,12 @@ mkdir -p "$LOG_DIR"
 echo -e "\n🚀 Inizio deploy: $(date)" | tee -a "$LOG_FILE"
 
 # Passo 1: Aggiunta, commit e push delle modifiche su GitHub
-cd "$REPO_DIR" || exit 1
+git config --global user.email "actions@github.com"
+git config --global user.name "github-actions"
+
 git add .
-git commit -m "Auto-deploy: $(date)" && echo "✅ Commit effettuato con successo." || { echo "❌ Errore nel commit!"; exit 1; }
+git commit -m "Auto-deploy: $(date)" && echo "✅ Commit effettuato con successo." || { echo "❌ Errore nel commit (forse nessuna modifica da committare)!"; }
+
 git push origin "$GITHUB_BRANCH" && echo "✅ Push su GitHub completato." || { echo "❌ Errore nel push!"; exit 1; }
 
 # Passo 2: Controllo stato GitHub Actions
@@ -33,7 +36,7 @@ fi
 
 # Attendi il completamento della GitHub Action
 echo "🔄 In attesa del completamento del workflow ID: $GH_RUN_ID..."
-gh run watch "$GH_RUN_ID" -R "$GITHUB_REPO" || { echo "❌ Errore nel monitoraggio GitHub Actions!" | tee -a "$LOG_FILE"; exit 1; }
+gh run watch "$GH_RUN_ID" -R "$GITHUB_REPO" || { echo "❌ Errore nel monitoraggio GitHub Actions!"; exit 1; }
 
 # Salva i log dell'esecuzione in un file
 echo "📄 Salvataggio log in $LOG_FILE..."
