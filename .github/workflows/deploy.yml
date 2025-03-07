@@ -7,11 +7,11 @@ on:
       - dev
 
 env:
-  PROJECT_ID: 'trading90'  # ID del progetto Google Cloud
-  REGION: 'us-central1'  # Regione per Cloud Run e Artifact Registry
-  SERVICE: 'trading-ai-service'  # Nome del servizio Cloud Run
-  REPOSITORY: 'trading-ai-repo'  # Nome del repository Artifact Registry
-  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}  # Riconosce se è `main` o `dev`
+  PROJECT_ID: 'trading90'
+  REGION: 'us-central1'
+  SERVICE: 'trading-ai-service'
+  REPOSITORY: 'trading-ai-repo'
+  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 
 jobs:
   deploy:
@@ -19,10 +19,10 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write  # Necessario per autenticazione Google Cloud
+      id-token: write
 
     steps:
-      # 🔹 1️⃣ Scarica il codice del repository
+      # 🔹 1️⃣ Checkout Repository
       - name: 'Checkout Repository'
         uses: actions/checkout@v4
 
@@ -30,15 +30,13 @@ jobs:
       - name: 'Autenticazione su Google Cloud'
         run: |
           echo "🔍 Controllo che il segreto sia stato passato..."
-          SECRET_LENGTH=$(echo -n "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | wc -c)
-
-          if [[ $SECRET_LENGTH -lt 10 ]]; then
+          if [[ -z "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" ]]; then
             echo "❌ ERRORE: Il segreto GCP_SERVICE_ACCOUNT_KEY non è stato impostato correttamente in GitHub Secrets!"
             exit 1
           fi
 
           echo "🔑 Scrittura della chiave JSON su file..."
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > $HOME/gcp-key.json
+          echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > $HOME/gcp-key.json
 
           echo "📂 Verifica che il file JSON sia stato creato correttamente..."
           if [[ ! -s "$HOME/gcp-key.json" ]]; then
