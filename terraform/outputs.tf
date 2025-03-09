@@ -1,15 +1,15 @@
 output "cloud_run_url" {
-  value = google_cloud_run_service.trading_ai.status[0].url
+  value = module.cloud_run.cloud_run_url
 }
 
 output "database_instance_connection" {
-  value = google_sql_database_instance.trading_ai.connection_name
+  value = module.sql_database.database_instance_connection
 }
 
 output "database_public_ip" {
-  value = google_sql_database_instance.trading_ai.public_ip_address
+  value = module.sql_database.database_public_ip
 }
 
 output "storage_bucket_name" {
-  value = google_storage_bucket.trading_ai.name
+  value = module.storage.storage_bucket_name
 }

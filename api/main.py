@@ -1,18 +1,20 @@
-from fastapi import FastAPI
+import os
 import joblib
-import numpy as np
-from stable_baselines3 import PPO
+from fastapi import FastAPI
+
+# Percorso del modello
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "model", "xgboost_model.pkl")
 
 app = FastAPI()
 
-xgb_model = joblib.load("xgboost_model.pkl")
-rl_model = PPO.load("rl_model")
+# Verifica che il modello esista prima di caricarlo
+if os.path.exists(MODEL_PATH):
+    xgb_model = joblib.load(MODEL_PATH)
+    print("✅ Modello caricato con successo!")
+else:
+    raise FileNotFoundError(f"❌ Errore: Il file '{MODEL_PATH}' non è stato trovato.")
 
-@app.post("/predict")
-def predict(data: dict):
-    features = np.array([data["SMA_50"], data["SMA_200"], data["RSI"], data["ATR"], data["VWAP"]]).reshape(1, -1)
-    market_prediction = xgb_model.predict(features)[0]
-    action, _ = rl_model.predict(features)
-    decision = ["BUY", "HOLD", "SELL"][action]
-
-    return {"market_prediction": market_prediction, "trading_decision": decision}
+@app.get("/")
+async def root():
+    return {"message": "Trading AI API is running!"}

@@ -22,6 +22,17 @@ resource "google_cloud_run_service" "trading_ai" {
     spec {
       containers {
         image = "gcr.io/${var.project_id}/trading-ai-service"
+
+        ports {
+          container_port = 8080
+        }
+
+        resources {
+          limits = {
+            cpu    = "1"
+            memory = "512Mi"
+          }
+        }
       }
     }
   }
@@ -32,3 +43,6 @@ resource "google_cloud_run_service" "trading_ai" {
   }
 }
 
+output "cloud_run_url" {
+  value = google_cloud_run_service.trading_ai.status[0].url
+}

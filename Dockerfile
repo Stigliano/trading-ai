@@ -1,22 +1,21 @@
-# Usa Python 3.9 come immagine base
+# Usa l'ultima versione stabile di Python
 FROM python:3.9
 
-# Imposta la working directory
+# Imposta la directory di lavoro
 WORKDIR /app
 
-# Copia tutti i file locali nella directory di lavoro nel container
+# Copia i file del progetto
 COPY . /app
+
+# Assicurati che la cartella model/ esista e copia il modello
+RUN mkdir -p /app/api/model
+COPY api/model/xgboost_model.pkl /app/api/model/xgboost_model.pkl
 
 # Installa le dipendenze
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia e genera il modello XGBoost
-COPY scripts/generate_model.py /app/scripts/generate_model.py
-RUN python3 /app/scripts/generate_model.py
-
-# Espone la porta 8080 per Cloud Run
+# Esponi la porta 8080 per Cloud Run
 EXPOSE 8080
 
-# Comando di avvio del server
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8080"]
-
+# Avvia l'applicazione con Gunicorn e Uvicorn
+CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "api.main:app", "--bind", "0.0.0.0:8080"]

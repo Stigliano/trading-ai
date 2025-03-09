@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-joblib
-numpy
-xgboost
-pandas
-stable-baselines3
-gym

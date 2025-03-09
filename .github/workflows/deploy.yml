@@ -1,4 +1,4 @@
-name: 'Esegui deploy.sh per il Deploy su Cloud Run'
+name: 'Deploy su Cloud Run con Cloud Build'
 
 on:
   push:
@@ -22,57 +22,29 @@ jobs:
       id-token: write
 
     steps:
-      # 🔹 1️⃣ Scarica il codice del repository
+      # 🔹 1️⃣ Checkout Repository
       - name: 'Checkout Repository'
         uses: actions/checkout@v4
 
       # 🔹 2️⃣ Autenticazione su Google Cloud
       - name: 'Autenticazione su Google Cloud'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}'
+
+      # 🔹 3️⃣ Configura il progetto e abilita servizi (se non sono attivi)
+      - name: 'Configura Google Cloud'
         run: |
-          echo "🔍 Controllo presenza del segreto..."
-          if [[ -z "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" ]]; then
-            echo "❌ ERRORE: Il segreto GCP_SERVICE_ACCOUNT_KEY non è stato impostato!"
-            exit 1
-          fi
+          gcloud config set project $PROJECT_ID
+          gcloud services enable cloudbuild.googleapis.com run.googleapis.com artifactregistry.googleapis.com
+          gcloud auth configure-docker $REGION-docker.pkg.dev
 
-          echo "🔑 Scrittura chiave JSON..."
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > $HOME/gcp-key.json
-
-          echo "📂 Verifica file JSON..."
-          if [[ ! -s "$HOME/gcp-key.json" ]]; then
-            echo "❌ ERRORE: Il file JSON è vuoto o invalido!"
-            exit 1
-          fi
-
-          echo "🔐 Autenticazione GCloud..."
-          gcloud auth activate-service-account --key-file=$HOME/gcp-key.json || { echo "❌ Autenticazione fallita!"; exit 1; }
-
-          echo "🔗 Configurazione Docker per Artifact Registry..."
-          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev || { echo "❌ ERRORE configurazione Docker!"; exit 1; }
-
-      # 🔹 3️⃣ Setup GitHub CLI per deploy.sh
-      - name: 'Setup GitHub CLI'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # 🔹 4️⃣ Avvia la build e il deploy su Cloud Run usando Google Cloud Build
+      - name: 'Esegui Google Cloud Build'
         run: |
-          gh auth setup-git
-
-      # 🔹 4️⃣ Controlla e avvia deploy.sh
-      - name: 'Verifica ed esegui deploy.sh'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "📄 Controllo deploy.sh..."
-          if [[ ! -f "deploy.sh" ]]; then
-            echo "❌ ERRORE: deploy.sh non trovato!"
-            exit 1
-          fi
-
-          chmod +x deploy.sh
-          echo "🚀 Lancio deploy.sh..."
-          ./deploy.sh || { echo "❌ ERRORE: deploy.sh fallito!"; exit 1; }
-
-      # 🔹 4️⃣ Conferma completamento
+          gcloud builds submit --project=$PROJECT_ID --substitutions=_REGION=$REGION,_SERVICE=$SERVICE,_REPOSITORY=$REPOSITORY
+          
+      # 🔹 5️⃣ Conferma completamento
       - name: 'Conferma completamento'
-        run: |
-          echo "✅ Il workflow è stato completato con successo!"
+        run: echo "✅ Deploy completato con successo!"
+

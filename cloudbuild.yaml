@@ -1,42 +1,28 @@
 steps:
-  # 🔹 1️⃣ Build dell'immagine Docker
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
-      - '.'
+  # Step 1: Build dell'immagine Docker
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "us-central1-docker.pkg.dev/$PROJECT_ID/trading-ai-repo/trading-ai-service:latest", "."]
 
-  # 🔹 2️⃣ Push dell'immagine su Google Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
+  # Step 2: Push dell'immagine nel Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "us-central1-docker.pkg.dev/$PROJECT_ID/trading-ai-repo/trading-ai-service:latest"]
 
-  # 🔹 3️⃣ Deploy su Cloud Run con più debug
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'bash'
+  # Step 3: Deploy su Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
     args:
-      - '-c'
-      - |
-        set -x
-        gcloud run deploy ${_SERVICE} \
-          --image ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest \
-          --region ${_REGION} \
-          --platform managed \
-          --allow-unauthenticated \
-          --port 8080 \
-          --timeout 300s \
-          --memory 512Mi \
-          --cpu 1 || \
-        gcloud logs read --resource-type=cloud_run_revision --service=${_SERVICE} --limit=50
-
-substitutions:
-  _PROJECT_ID: 'trading90'  # 🔹 Aggiunto
-  _REGION: 'us-central1'
-  _SERVICE: 'trading-ai-service'
-  _REPOSITORY: 'trading-ai-repo'
+      - "run"
+      - "deploy"
+      - "trading-ai-service"
+      - "--image=us-central1-docker.pkg.dev/$PROJECT_ID/trading-ai-repo/trading-ai-service:latest"
+      - "--region=$_REGION"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
+      - "--port=8080"
 
 images:
-  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
+  - "us-central1-docker.pkg.dev/$PROJECT_ID/trading-ai-repo/trading-ai-service:latest"
 
+substitutions:
+  _PROJECT_ID: "trading90"
+  _REGION: "us-central1"

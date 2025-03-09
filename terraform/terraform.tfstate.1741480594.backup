@@ -1,23 +1,59 @@
 {
   "version": 4,
   "terraform_version": "1.11.1",
-  "serial": 22,
+  "serial": 11,
   "lineage": "470f47bd-d8fa-5182-9e7c-59464648bf92",
   "outputs": {
-    "database_instance_connection": {
-      "value": "trading90:us-central1:trading-ai-db",
-      "type": "string"
-    },
-    "database_public_ip": {
-      "value": "34.134.151.142",
-      "type": "string"
-    },
     "storage_bucket_name": {
       "value": "trading90-trading-ai-bucket",
       "type": "string"
     }
   },
   "resources": [
+    {
+      "mode": "managed",
+      "type": "google_storage_bucket",
+      "name": "trading_ai",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "autoclass": [],
+            "cors": [],
+            "custom_placement_config": [],
+            "default_event_based_hold": false,
+            "encryption": [],
+            "force_destroy": false,
+            "id": "trading90-trading-ai-bucket",
+            "labels": {},
+            "lifecycle_rule": [],
+            "location": "US-CENTRAL1",
+            "logging": [],
+            "name": "trading90-trading-ai-bucket",
+            "project": "trading90",
+            "public_access_prevention": "inherited",
+            "requester_pays": false,
+            "retention_policy": [],
+            "self_link": "https://www.googleapis.com/storage/v1/b/trading90-trading-ai-bucket",
+            "soft_delete_policy": [
+              {
+                "effective_time": "2025-03-08T23:48:41.657Z",
+                "retention_duration_seconds": 604800
+              }
+            ],
+            "storage_class": "STANDARD",
+            "timeouts": null,
+            "uniform_bucket_level_access": false,
+            "url": "gs://trading90-trading-ai-bucket",
+            "versioning": [],
+            "website": []
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsInJlYWQiOjI0MDAwMDAwMDAwMCwidXBkYXRlIjoyNDAwMDAwMDAwMDB9fQ=="
+        }
+      ]
+    },
     {
       "module": "module.cloud_run",
       "mode": "managed",
@@ -51,22 +87,8 @@
                         "image": "gcr.io/trading90/trading-ai-service",
                         "liveness_probe": [],
                         "name": "",
-                        "ports": [
-                          {
-                            "container_port": 8080,
-                            "name": "",
-                            "protocol": ""
-                          }
-                        ],
-                        "resources": [
-                          {
-                            "limits": {
-                              "cpu": "1",
-                              "memory": "512Mi"
-                            },
-                            "requests": null
-                          }
-                        ],
+                        "ports": [],
+                        "resources": [],
                         "startup_probe": [],
                         "volume_mounts": [],
                         "working_dir": ""
@@ -141,17 +163,17 @@
             "deletion_protection": false,
             "dns_name": "",
             "encryption_key_name": null,
-            "first_ip_address": "34.134.151.142",
+            "first_ip_address": "34.70.226.200",
             "id": "trading-ai-db",
             "instance_type": "CLOUD_SQL_INSTANCE",
             "ip_address": [
               {
-                "ip_address": "34.134.151.142",
+                "ip_address": "34.70.226.200",
                 "time_to_retire": "",
                 "type": "PRIMARY"
               },
               {
-                "ip_address": "34.55.16.143",
+                "ip_address": "34.45.82.182",
                 "time_to_retire": "",
                 "type": "OUTGOING"
               }
@@ -162,7 +184,7 @@
             "private_ip_address": "",
             "project": "trading90",
             "psc_service_attachment_link": "",
-            "public_ip_address": "34.134.151.142",
+            "public_ip_address": "34.70.226.200",
             "region": "us-central1",
             "replica_configuration": [],
             "restore_backup_context": [],
@@ -170,14 +192,14 @@
             "self_link": "https://sqladmin.googleapis.com/sql/v1beta4/projects/trading90/instances/trading-ai-db",
             "server_ca_cert": [
               {
-                "cert": "-----BEGIN CERTIFICATE-----\nMIIDfzCCAmegAwIBAgIBADANBgkqhkiG9w0BAQsFADB3MS0wKwYDVQQuEyQ0ZTA3\nMjJlZi1mNzY3LTQ1NjctYTNhZi05MDdmOGM4MGFjMTAxIzAhBgNVBAMTGkdvb2ds\nZSBDbG91ZCBTUUwgU2VydmVyIENBMRQwEgYDVQQKEwtHb29nbGUsIEluYzELMAkG\nA1UEBhMCVVMwHhcNMjUwMzA5MTIwOTM2WhcNMzUwMzA3MTIxMDM2WjB3MS0wKwYD\nVQQuEyQ0ZTA3MjJlZi1mNzY3LTQ1NjctYTNhZi05MDdmOGM4MGFjMTAxIzAhBgNV\nBAMTGkdvb2dsZSBDbG91ZCBTUUwgU2VydmVyIENBMRQwEgYDVQQKEwtHb29nbGUs\nIEluYzELMAkGA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB\nAQC4pNMNgrU3R8ZIPT33P94K0xZJclhG9dd5cYAwnTecJVioWmcnGZnyHi+MdJ7b\nnodm+n9l7qQKMq1hQyLnkRz3GUQbkWBUulN2/voA6JYHBz2aS0JmckiCmZykDM4q\nCEdk/7FZ5XMy7czmkVBwh75R+eR2X06Von2Xe9V100cJ007uPFSkT0EvQC13uiBg\n61+LxYhGUB+aC4IIwsB1MelxjbnheUYvbKt+CBjIYQm3744jOLLzCVjftWFZOdMQ\nzoz2ADLn/h8z6j4JLchiwfuayF3a+waBdDy5vfbsPmJHG2Rz8Xf2pv31yFhAvh9a\nEP0KoALT+GLVJb3IeUhpvttrAgMBAAGjFjAUMBIGA1UdEwEB/wQIMAYBAf8CAQAw\nDQYJKoZIhvcNAQELBQADggEBABMF3cOARl/cc2qVU6t1nhxO3JLXQRYC4WmQ2zeX\nPy2xFaT1Q7MhSTWcZImfDm1S7UOmFFa2NFkw9F+0JsAZoJHdKbYZO/i5EDEDq1eO\nvCmq4rAZz6OI2o4DRyIvTabsHCB0iHcG4loLRUmet6LD1HkYAwhgqNo/YfMskgI8\n2SQLF7HVc2WOKTRwgVZQvZANHNMMPOeGxhvDbA4GPFmTruwdUwDiC3P3hwRc+5oS\nLZ3zXrXoRw1rf26lmFiQcX0y+T9d2nQTKSlshatMyN4vwAgTmGELEXTIfqTQMXG+\n4PKWq2crDsQQSx8uRUWqEr7NDBcBs8C5NTStSTqnS6aWIqA=\n-----END CERTIFICATE-----",
-                "common_name": "C=US,O=Google\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=4e0722ef-f767-4567-a3af-907f8c80ac10",
-                "create_time": "2025-03-09T12:09:36.758Z",
-                "expiration_time": "2035-03-07T12:10:36.758Z",
-                "sha1_fingerprint": "0470c8f2bcf88cac805d02674c539e335fae767d"
+                "cert": "-----BEGIN CERTIFICATE-----\nMIIDfzCCAmegAwIBAgIBADANBgkqhkiG9w0BAQsFADB3MS0wKwYDVQQuEyQ2NDFm\nNTlmMi05YmI5LTQxNTgtOTIxZi04NTc3ZjhkMmQ0YjExIzAhBgNVBAMTGkdvb2ds\nZSBDbG91ZCBTUUwgU2VydmVyIENBMRQwEgYDVQQKEwtHb29nbGUsIEluYzELMAkG\nA1UEBhMCVVMwHhcNMjUwMzA4MjM0ODI5WhcNMzUwMzA2MjM0OTI5WjB3MS0wKwYD\nVQQuEyQ2NDFmNTlmMi05YmI5LTQxNTgtOTIxZi04NTc3ZjhkMmQ0YjExIzAhBgNV\nBAMTGkdvb2dsZSBDbG91ZCBTUUwgU2VydmVyIENBMRQwEgYDVQQKEwtHb29nbGUs\nIEluYzELMAkGA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB\nAQDHeQkHkq72YosXsIabRbiYTxnfWcQDKtB/P8Gv6oqDZr5HFdJKV5JMEMEQyxkn\nNZQY8DmhQzODrt4+xAz2QtrUNZpziEnuFkvmg/UoS+LvqCxE499u2GrleYQUpHmY\n1aX9mnNJhBnoeMLpmQOUUYTx/+yKETKnEvxuhqJpz7Z3deJOvi3MLwDEyvzScIBg\nDl3R8wk+/bx/wh3nRMiMFvPExDXpr4iYtXX3lbm0QJMbnA5ciwyyI/WDRv6eEKYl\n3cQLZdhE5jLUULPpjmPXuf7imFXtcwnxfR+BfYSBIj6wrmt8Z5tUZn3UW5pF5FGg\nod8ed8NfRKkvqFYCIxMqf86ZAgMBAAGjFjAUMBIGA1UdEwEB/wQIMAYBAf8CAQAw\nDQYJKoZIhvcNAQELBQADggEBAKK0E7hFDhcNCFELwd2KvH/PJPxzpH6xBzMauM7k\nYytf2Wy78r3048bDVBIimciM/Aufi4diITO/ZLAk7PLSdNfvov4gS1h4n1b/CcQq\nuLFMon3eZ+M2tVMapZwdGuNfi8mQ23xpra9MVbVGMFq141ZhtwNKJoI/zM7zIj+p\nXCEIezkZVpPfGiaE5MlklUoF2uGMfZzhx8fiRVNdPu9fNzsO3es3GZJNANohqZl7\nPWvdvEv25iG80UMQBQNRlUhWBVlTuziHEiNrizD0X4yvmoFUoGt4eztvr7XvJsNw\nlcXfawaGob+eEYZBLHKjFFPyZ57nDBjiXeHnwYWYHEnnCXw=\n-----END CERTIFICATE-----",
+                "common_name": "C=US,O=Google\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=641f59f2-9bb9-4158-921f-8577f8d2d4b1",
+                "create_time": "2025-03-08T23:48:29.875Z",
+                "expiration_time": "2035-03-06T23:49:29.875Z",
+                "sha1_fingerprint": "545e1dd533e539c325ff149aadfa21c52b2f937c"
               }
             ],
-            "service_account_email_address": "p945635315103-zv460j@gcp-sa-cloud-sql.iam.gserviceaccount.com",
+            "service_account_email_address": "p945635315103-rhq26j@gcp-sa-cloud-sql.iam.gserviceaccount.com",
             "settings": [
               {
                 "activation_policy": "ALWAYS",
@@ -196,7 +218,7 @@
                     "enabled": false,
                     "location": "",
                     "point_in_time_recovery_enabled": false,
-                    "start_time": "06:00",
+                    "start_time": "15:00",
                     "transaction_log_retention_days": 7
                   }
                 ],
@@ -269,7 +291,7 @@
             "id": "trading_ai_user//trading-ai-db",
             "instance": "trading-ai-db",
             "name": "trading_ai_user",
-            "password": "flbvlaDonastaineR2020!$",
+            "password": "SuperSecurePassword",
             "password_policy": [],
             "project": "trading90",
             "sql_server_user_details": [],
@@ -288,75 +310,6 @@
           "dependencies": [
             "module.sql_database.google_sql_database_instance.trading_ai"
           ]
-        }
-      ]
-    },
-    {
-      "module": "module.storage",
-      "mode": "managed",
-      "type": "google_storage_bucket",
-      "name": "trading_ai",
-      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
-      "instances": [
-        {
-          "schema_version": 0,
-          "attributes": {
-            "autoclass": [],
-            "cors": [],
-            "custom_placement_config": [],
-            "default_event_based_hold": false,
-            "encryption": [],
-            "force_destroy": true,
-            "id": "trading90-trading-ai-bucket",
-            "labels": {},
-            "lifecycle_rule": [
-              {
-                "action": [
-                  {
-                    "storage_class": "",
-                    "type": "Delete"
-                  }
-                ],
-                "condition": [
-                  {
-                    "age": 365,
-                    "created_before": "",
-                    "custom_time_before": "",
-                    "days_since_custom_time": 0,
-                    "days_since_noncurrent_time": 0,
-                    "matches_prefix": [],
-                    "matches_storage_class": [],
-                    "matches_suffix": [],
-                    "noncurrent_time_before": "",
-                    "num_newer_versions": 0,
-                    "with_state": "ANY"
-                  }
-                ]
-              }
-            ],
-            "location": "US-CENTRAL1",
-            "logging": [],
-            "name": "trading90-trading-ai-bucket",
-            "project": "trading90",
-            "public_access_prevention": "inherited",
-            "requester_pays": false,
-            "retention_policy": [],
-            "self_link": "https://www.googleapis.com/storage/v1/b/trading90-trading-ai-bucket",
-            "soft_delete_policy": [
-              {
-                "effective_time": "2025-03-09T12:09:48.179Z",
-                "retention_duration_seconds": 604800
-              }
-            ],
-            "storage_class": "STANDARD",
-            "timeouts": null,
-            "uniform_bucket_level_access": true,
-            "url": "gs://trading90-trading-ai-bucket",
-            "versioning": [],
-            "website": []
-          },
-          "sensitive_attributes": [],
-          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsInJlYWQiOjI0MDAwMDAwMDAwMCwidXBkYXRlIjoyNDAwMDAwMDAwMDB9fQ=="
         }
       ]
     }

@@ -1,0 +1,7 @@
+project_id = "trading90"
+region = "us-central1"
+cloud_run_service_name = "trading-ai-service"
+db_instance_name = "trading-ai-db"
+db_user = "trading_ai_user"
+db_password = "flbvlaDonastaineR2020!$"
+db_name = "trading_ai_data"

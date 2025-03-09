@@ -26,3 +26,7 @@ resource "google_storage_bucket" "trading_ai" {
   }
 }
 
+
+output "storage_bucket_name" {
+  value = google_storage_bucket.trading_ai.name
+}

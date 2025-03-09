@@ -32,9 +32,9 @@ resource "google_sql_database_instance" "trading_ai" {
   name             = var.db_instance_name
   project          = var.project_id
   region           = var.region
-  database_version = "POSTGRES_13"  # corretto da MYSQL_8_0
+  database_version = "POSTGRES_13"
 
-  deletion_protection = false  # aggiunto per permettere la cancellazione
+  deletion_protection = false  # Aggiunto per permettere la cancellazione
 
   settings {
     tier = "db-f1-micro"
@@ -57,3 +57,11 @@ resource "google_sql_database" "trading_ai_db" {
   project  = var.project_id
 }
 
+
+output "database_instance_connection" {
+  value = google_sql_database_instance.trading_ai.connection_name
+}
+
+output "database_public_ip" {
+  value = google_sql_database_instance.trading_ai.public_ip_address
+}

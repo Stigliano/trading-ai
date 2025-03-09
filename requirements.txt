@@ -1,14 +1,5 @@
 fastapi
 uvicorn
-numpy
-pandas
-scikit-learn
-xgboost
-stable-baselines3
-gym
+gunicorn
 joblib
-requests
-sqlalchemy
-psycopg2-binary
-python-dotenv
-
+xgboost
