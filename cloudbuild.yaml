@@ -1,49 +1,27 @@
-import yaml
+---
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "us-central1-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest", "."]
 
-# Percorso del file cloudbuild.yaml
-cloudbuild_file = "cloudbuild.yaml"
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "us-central1-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest"]
 
-# Leggi il file YAML
-with open(cloudbuild_file, "r") as file:
-    cloudbuild_data = yaml.safe_load(file)
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "${_SERVICE}"
+      - "--image=us-central1-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest"
+      - "--region=${_REGION}"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
 
-# Assicura che la sezione substitutions esista e sia corretta
-cloudbuild_data["substitutions"] = {
-    "_PROJECT_ID": "trading90",
-    "_REGION": "us-central1",
-    "_SERVICE": "trading-ai-service",
-    "_REPOSITORY": "trading-ai-repo"
-}
+substitutions:
+  _PROJECT_ID: "trading90"
+  _REGION: "us-central1"
+  _SERVICE: "trading-ai-service"
+  _REPOSITORY: "trading-ai-repo"
 
-# Assicura che i comandi usino _PROJECT_ID
-for step in cloudbuild_data.get("steps", []):
-    for i, arg in enumerate(step.get("args", [])):
-        step["args"][i] = arg.replace("trading90", "$_PROJECT_ID")
-
-# Scrivi le modifiche nel file
-with open(cloudbuild_file, "w") as file:
-    yaml.dump(cloudbuild_data, file, default_flow_style=False)
-
-print("✅ cloudbuild.yaml aggiornato correttamente.")
-
-# Esegui i comandi Git per confermare le modifiche
-import subprocess
-
-commands = [
-    ["git", "add", "cloudbuild.yaml"],
-    ["git", "commit", "-m", "Fix: Corretto _PROJECT_ID in cloudbuild.yaml"],
-    ["git", "push", "origin", "main"],
-    [
-        "gcloud", "builds", "submit",
-        "--config=cloudbuild.yaml",
-        "--substitutions=_PROJECT_ID=trading90,_REGION=us-central1,_SERVICE=trading-ai-service,_REPOSITORY=trading-ai-repo"
-    ]
-]
-
-for cmd in commands:
-    try:
-        subprocess.run(cmd, check=True)
-        print(f"✅ Comando eseguito: {' '.join(cmd)}")
-    except subprocess.CalledProcessError as e:
-        print(f"❌ Errore eseguendo: {' '.join(cmd)}\n{e}")
-
+images:
+  - "us-central1-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest"
