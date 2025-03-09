@@ -11,16 +11,16 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 🔹 Genera automaticamente il modello xgboost_model.pkl durante la build
-RUN python3 -c "
-import joblib;
-import xgboost as xgb;
-import numpy as np;
-model = xgb.XGBClassifier();
-X_sample = np.random.rand(10, 5);
-y_sample = np.random.randint(0, 2, 10);
-model.fit(X_sample, y_sample);
-joblib.dump(model, 'xgboost_model.pkl');
-print('✅ Modello xgboost_model.pkl generato con successo!');
+RUN python3 -c "  
+import joblib;  
+import xgboost as xgb;  
+import numpy as np;  
+model = xgb.XGBClassifier();  
+X_sample = np.random.rand(10, 5);  
+y_sample = np.random.randint(0, 2, 10);  
+model.fit(X_sample, y_sample);  
+joblib.dump(model, 'xgboost_model.pkl');  
+print('✅ Modello xgboost_model.pkl generato con successo!');  
 "
 
 # Espone la porta 8080 per Cloud Run
