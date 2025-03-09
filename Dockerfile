@@ -19,7 +19,7 @@ model = xgb.XGBClassifier();
 X_sample = np.random.rand(10, 5);  
 y_sample = np.random.randint(0, 2, 10);  
 model.fit(X_sample, y_sample);  
-joblib.dump(model, 'xgboost_model.pkl');  
+joblib.dump(model, '/app/xgboost_model.pkl');  
 print('✅ Modello xgboost_model.pkl generato con successo!');  
 "
 
