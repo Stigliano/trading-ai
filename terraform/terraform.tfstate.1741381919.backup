@@ -1,0 +1,402 @@
+{
+  "version": 4,
+  "terraform_version": "1.11.1",
+  "serial": 27,
+  "lineage": "eca31391-54ee-7aff-e179-48ba39b9d849",
+  "outputs": {
+    "cloud_run_url": {
+      "value": "",
+      "type": "string"
+    },
+    "database_instance_connection": {
+      "value": "trading90:us-central1:trading-ai-db",
+      "type": "string"
+    },
+    "database_public_ip": {
+      "value": "34.27.202.251",
+      "type": "string"
+    },
+    "storage_bucket_name": {
+      "value": "trading90-trading-ai-bucket",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "google_cloud_run_service",
+      "name": "trading_ai",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "autogenerate_revision_name": false,
+            "id": "locations/us-central1/namespaces/945635315103/services/trading-ai-service",
+            "location": "us-central1",
+            "metadata": [
+              {
+                "annotations": {
+                  "run.googleapis.com/build-enable-automatic-updates": "false",
+                  "run.googleapis.com/build-id": "5dcb782d-aed0-409a-a3f4-7646c0b74289",
+                  "run.googleapis.com/build-image-uri": "us-central1-docker.pkg.dev/trading90/cloud-run-source-deploy/trading-ai-service",
+                  "run.googleapis.com/build-name": "projects/945635315103/locations/us-central1/builds/5dcb782d-aed0-409a-a3f4-7646c0b74289",
+                  "run.googleapis.com/build-source-location": "gs://run-sources-trading90-us-central1/services/trading-ai-service/1741366753.140471-d25e29f4fab64d48b6d31a0f827a8340.zip#1741366753289018",
+                  "run.googleapis.com/client-name": "gcloud",
+                  "run.googleapis.com/client-version": "513.0.0",
+                  "run.googleapis.com/ingress": "all",
+                  "run.googleapis.com/ingress-status": "all",
+                  "run.googleapis.com/operation-id": "274379e8-01c2-4cca-a102-6b9c6cdf7247",
+                  "run.googleapis.com/urls": "[\"https://trading-ai-service-945635315103.us-central1.run.app\"]",
+                  "serving.knative.dev/creator": "Don.Stigliano@gmail.com",
+                  "serving.knative.dev/lastModifier": "Don.Stigliano@gmail.com"
+                },
+                "generation": 5,
+                "labels": {
+                  "cloud.googleapis.com/location": "us-central1"
+                },
+                "namespace": "945635315103",
+                "resource_version": "AAYvxIcLajM",
+                "self_link": "/apis/serving.knative.dev/v1/namespaces/945635315103/services/trading-ai-service",
+                "uid": "5321da47-1b86-4d9b-994a-675511217b6a"
+              }
+            ],
+            "name": "trading-ai-service",
+            "project": "945635315103",
+            "status": [
+              {
+                "conditions": [
+                  {
+                    "message": "Revision 'trading-ai-service-00005-xhj' is not ready and cannot serve traffic. Image 'gcr.io/trading90/trading-ai-service' not found.",
+                    "reason": "RevisionFailed",
+                    "status": "False",
+                    "type": "Ready"
+                  },
+                  {
+                    "message": "Image 'gcr.io/trading90/trading-ai-service' not found.",
+                    "reason": "",
+                    "status": "True",
+                    "type": "ConfigurationsReady"
+                  },
+                  {
+                    "message": "Revision 'trading-ai-service-00005-xhj' is not ready and cannot serve traffic. Image 'gcr.io/trading90/trading-ai-service' not found.",
+                    "reason": "RevisionFailed",
+                    "status": "False",
+                    "type": "RoutesReady"
+                  }
+                ],
+                "latest_created_revision_name": "trading-ai-service-00005-xhj",
+                "latest_ready_revision_name": "trading-ai-service-00004-vlp",
+                "observed_generation": 5,
+                "traffic": [],
+                "url": ""
+              }
+            ],
+            "template": [
+              {
+                "metadata": [
+                  {
+                    "annotations": {
+                      "autoscaling.knative.dev/maxScale": "100",
+                      "run.googleapis.com/client-name": "gcloud",
+                      "run.googleapis.com/client-version": "513.0.0",
+                      "run.googleapis.com/startup-cpu-boost": "true"
+                    },
+                    "generation": 0,
+                    "labels": {
+                      "client.knative.dev/nonce": "idxvzpuznr",
+                      "run.googleapis.com/startupProbeType": "Default"
+                    },
+                    "name": "",
+                    "namespace": "",
+                    "resource_version": "",
+                    "self_link": "",
+                    "uid": ""
+                  }
+                ],
+                "spec": [
+                  {
+                    "container_concurrency": 80,
+                    "containers": [
+                      {
+                        "args": [],
+                        "command": [],
+                        "env": [],
+                        "env_from": [],
+                        "image": "gcr.io/trading90/trading-ai-service",
+                        "liveness_probe": [],
+                        "name": "",
+                        "ports": [
+                          {
+                            "container_port": 8080,
+                            "name": "http1",
+                            "protocol": ""
+                          }
+                        ],
+                        "resources": [
+                          {
+                            "limits": {
+                              "cpu": "1000m",
+                              "memory": "512Mi"
+                            },
+                            "requests": {}
+                          }
+                        ],
+                        "startup_probe": [
+                          {
+                            "failure_threshold": 1,
+                            "grpc": [],
+                            "http_get": [],
+                            "initial_delay_seconds": 0,
+                            "period_seconds": 240,
+                            "tcp_socket": [
+                              {
+                                "port": 8080
+                              }
+                            ],
+                            "timeout_seconds": 240
+                          }
+                        ],
+                        "volume_mounts": [],
+                        "working_dir": ""
+                      }
+                    ],
+                    "service_account_name": "945635315103-compute@developer.gserviceaccount.com",
+                    "serving_state": "",
+                    "timeout_seconds": 300,
+                    "volumes": []
+                  }
+                ]
+              }
+            ],
+            "timeouts": {
+              "create": null,
+              "delete": null,
+              "update": null
+            },
+            "traffic": [
+              {
+                "latest_revision": true,
+                "percent": 100,
+                "revision_name": "",
+                "tag": "",
+                "url": ""
+              }
+            ]
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "google_logging_metric",
+      "name": "error_count",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket_name": "",
+            "bucket_options": [],
+            "description": "",
+            "disabled": false,
+            "filter": "resource.type=\"cloud_run_revision\" severity\u003e=ERROR",
+            "id": "trading-ai-error-logs",
+            "label_extractors": {},
+            "metric_descriptor": [
+              {
+                "display_name": "",
+                "labels": [],
+                "metric_kind": "DELTA",
+                "unit": "1",
+                "value_type": "INT64"
+              }
+            ],
+            "name": "trading-ai-error-logs",
+            "project": "trading90",
+            "timeouts": null,
+            "value_extractor": ""
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "google_sql_database_instance",
+      "name": "trading_ai",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "available_maintenance_versions": [],
+            "clone": [],
+            "connection_name": "trading90:us-central1:trading-ai-db",
+            "database_version": "POSTGRES_13",
+            "deletion_protection": true,
+            "dns_name": "",
+            "encryption_key_name": null,
+            "first_ip_address": "34.27.202.251",
+            "id": "trading-ai-db",
+            "instance_type": "CLOUD_SQL_INSTANCE",
+            "ip_address": [
+              {
+                "ip_address": "34.27.202.251",
+                "time_to_retire": "",
+                "type": "PRIMARY"
+              },
+              {
+                "ip_address": "34.30.6.211",
+                "time_to_retire": "",
+                "type": "OUTGOING"
+              }
+            ],
+            "maintenance_version": "POSTGRES_13_20.R20250112.01_14",
+            "master_instance_name": "",
+            "name": "trading-ai-db",
+            "private_ip_address": "",
+            "project": "trading90",
+            "psc_service_attachment_link": "",
+            "public_ip_address": "34.27.202.251",
+            "region": "us-central1",
+            "replica_configuration": [],
+            "restore_backup_context": [],
+            "root_password": null,
+            "self_link": "https://sqladmin.googleapis.com/sql/v1beta4/projects/trading90/instances/trading-ai-db",
+            "server_ca_cert": [
+              {
+                "cert": "-----BEGIN CERTIFICATE-----\nMIIDfzCCAmegAwIBAgIBADANBgkqhkiG9w0BAQsFADB3MS0wKwYDVQQuEyQ0YmE5\nMzVhMC01MWYzLTRmYmYtYWRiNi02MGNhNjM2MTU0MTUxIzAhBgNVBAMTGkdvb2ds\nZSBDbG91ZCBTUUwgU2VydmVyIENBMRQwEgYDVQQKEwtHb29nbGUsIEluYzELMAkG\nA1UEBhMCVVMwHhcNMjUwMzA3MTY0MjU2WhcNMzUwMzA1MTY0MzU2WjB3MS0wKwYD\nVQQuEyQ0YmE5MzVhMC01MWYzLTRmYmYtYWRiNi02MGNhNjM2MTU0MTUxIzAhBgNV\nBAMTGkdvb2dsZSBDbG91ZCBTUUwgU2VydmVyIENBMRQwEgYDVQQKEwtHb29nbGUs\nIEluYzELMAkGA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB\nAQC2SP63xQumhjwrwEo8yZ6fiwOSHNyqdWbQSB2Prf6Rz3hvXeEdSHvCPFEO9HZ5\nv3y1qsuntkoEflFZw/2keEyy8U2MgpWloepjgAVpnLKlzrDLQV/06ww2wg73dHbr\n0OFySihZfsrXC8dT2mJ2njI4XRUS364HlxCLQ+Ws/ayZM2FOxV5ZGtD3tDm2Nbp4\nByp4vI+SOWnl1/q5x/6P6f1YLFQK2EsXNw6K5TcxzY8eeMhT6xkFBtFuKaHvO9zX\nNepF5nb3baBUGuaIjgYSpOgvjKosIhLqRm92dxGfZd8qtxl8QDa92roxyaS4dgfV\n1DRlLgLR2FocRZnxJkV++X79AgMBAAGjFjAUMBIGA1UdEwEB/wQIMAYBAf8CAQAw\nDQYJKoZIhvcNAQELBQADggEBAFCvJyLjE5npTD8vfjinn8JhkF4pVxCX5vU4eHc8\n1A5NNNEuZtF0GEA2xEB62HLrcyVam47NudS6eWhl8mCVvS0pyMV2ndgNtik3vwkI\nxqxm5rSiWJmdC6mdJ33HmEL/k5OOZxV8GvDalwT7zSho13Rfu32+0+LIB4tXzOvV\nDoHgjcYRfr716cgRlI5a0qkVL2ro+Omp7FCV4cDNRuHtcXeInNRhPwoS9K5c4Q5l\niQpDTCREFdHt0v9dQy69Dto+5eHHPXl3plGl5Vz7kElztGONEzGcNKqS8M/PPreP\n7yaMthSsImWyjObnz7mQTU7JXY5Tu+3tcx5w+aPUClQyEH8=\n-----END CERTIFICATE-----",
+                "common_name": "C=US,O=Google\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=4ba935a0-51f3-4fbf-adb6-60ca63615415",
+                "create_time": "2025-03-07T16:42:56.106Z",
+                "expiration_time": "2035-03-05T16:43:56.106Z",
+                "sha1_fingerprint": "86da2735a9f9383fb35e4d6e05cdc8ee2f6dc07b"
+              }
+            ],
+            "service_account_email_address": "p945635315103-fxrl6s@gcp-sa-cloud-sql.iam.gserviceaccount.com",
+            "settings": [
+              {
+                "activation_policy": "ALWAYS",
+                "active_directory_config": [],
+                "advanced_machine_features": [],
+                "availability_type": "ZONAL",
+                "backup_configuration": [
+                  {
+                    "backup_retention_settings": [
+                      {
+                        "retained_backups": 7,
+                        "retention_unit": "COUNT"
+                      }
+                    ],
+                    "binary_log_enabled": false,
+                    "enabled": false,
+                    "location": "",
+                    "point_in_time_recovery_enabled": false,
+                    "start_time": "06:00",
+                    "transaction_log_retention_days": 7
+                  }
+                ],
+                "collation": "",
+                "connector_enforcement": "NOT_REQUIRED",
+                "data_cache_config": [],
+                "database_flags": [],
+                "deletion_protection_enabled": false,
+                "deny_maintenance_period": [],
+                "disk_autoresize": true,
+                "disk_autoresize_limit": 0,
+                "disk_size": 10,
+                "disk_type": "PD_SSD",
+                "edition": "",
+                "insights_config": [],
+                "ip_configuration": [
+                  {
+                    "allocated_ip_range": "",
+                    "authorized_networks": [],
+                    "enable_private_path_for_google_cloud_services": false,
+                    "ipv4_enabled": true,
+                    "private_network": "",
+                    "psc_config": [],
+                    "require_ssl": false
+                  }
+                ],
+                "location_preference": [
+                  {
+                    "follow_gae_application": "",
+                    "secondary_zone": "",
+                    "zone": "us-central1-c"
+                  }
+                ],
+                "maintenance_window": [],
+                "password_validation_policy": [],
+                "pricing_plan": "PER_USE",
+                "sql_server_audit_config": [],
+                "tier": "db-f1-micro",
+                "time_zone": "",
+                "user_labels": {},
+                "version": 6
+              }
+            ],
+            "timeouts": null
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "root_password"
+              }
+            ]
+          ],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoyNDAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInVwZGF0ZSI6MTgwMDAwMDAwMDAwMH19"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "google_storage_bucket",
+      "name": "trading_ai",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "autoclass": [],
+            "cors": [],
+            "custom_placement_config": [],
+            "default_event_based_hold": false,
+            "encryption": [],
+            "force_destroy": false,
+            "id": "trading90-trading-ai-bucket",
+            "labels": {},
+            "lifecycle_rule": [],
+            "location": "US-CENTRAL1",
+            "logging": [],
+            "name": "trading90-trading-ai-bucket",
+            "project": "trading90",
+            "public_access_prevention": "inherited",
+            "requester_pays": false,
+            "retention_policy": [],
+            "self_link": "https://www.googleapis.com/storage/v1/b/trading90-trading-ai-bucket",
+            "soft_delete_policy": [
+              {
+                "effective_time": "2025-03-07T19:55:37.805Z",
+                "retention_duration_seconds": 604800
+              }
+            ],
+            "storage_class": "STANDARD",
+            "timeouts": null,
+            "uniform_bucket_level_access": false,
+            "url": "gs://trading90-trading-ai-bucket",
+            "versioning": [],
+            "website": []
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsInJlYWQiOjI0MDAwMDAwMDAwMCwidXBkYXRlIjoyNDAwMDAwMDAwMDB9fQ=="
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

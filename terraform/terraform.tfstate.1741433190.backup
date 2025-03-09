@@ -1,0 +1,143 @@
+{
+  "version": 4,
+  "terraform_version": "1.11.1",
+  "serial": 50,
+  "lineage": "eca31391-54ee-7aff-e179-48ba39b9d849",
+  "outputs": {},
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "google_sql_database_instance",
+      "name": "trading_ai",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "available_maintenance_versions": [],
+            "clone": [],
+            "connection_name": "trading90:us-central1:trading-ai-db",
+            "database_version": "POSTGRES_13",
+            "deletion_protection": true,
+            "dns_name": "",
+            "encryption_key_name": null,
+            "first_ip_address": "34.27.202.251",
+            "id": "trading-ai-db",
+            "instance_type": "CLOUD_SQL_INSTANCE",
+            "ip_address": [
+              {
+                "ip_address": "34.27.202.251",
+                "time_to_retire": "",
+                "type": "PRIMARY"
+              },
+              {
+                "ip_address": "34.30.6.211",
+                "time_to_retire": "",
+                "type": "OUTGOING"
+              }
+            ],
+            "maintenance_version": "POSTGRES_13_20.R20250112.01_14",
+            "master_instance_name": "",
+            "name": "trading-ai-db",
+            "private_ip_address": "",
+            "project": "trading90",
+            "psc_service_attachment_link": "",
+            "public_ip_address": "34.27.202.251",
+            "region": "us-central1",
+            "replica_configuration": [],
+            "restore_backup_context": [],
+            "root_password": null,
+            "self_link": "https://sqladmin.googleapis.com/sql/v1beta4/projects/trading90/instances/trading-ai-db",
+            "server_ca_cert": [
+              {
+                "cert": "-----BEGIN CERTIFICATE-----\nMIIDfzCCAmegAwIBAgIBADANBgkqhkiG9w0BAQsFADB3MS0wKwYDVQQuEyQ0YmE5\nMzVhMC01MWYzLTRmYmYtYWRiNi02MGNhNjM2MTU0MTUxIzAhBgNVBAMTGkdvb2ds\nZSBDbG91ZCBTUUwgU2VydmVyIENBMRQwEgYDVQQKEwtHb29nbGUsIEluYzELMAkG\nA1UEBhMCVVMwHhcNMjUwMzA3MTY0MjU2WhcNMzUwMzA1MTY0MzU2WjB3MS0wKwYD\nVQQuEyQ0YmE5MzVhMC01MWYzLTRmYmYtYWRiNi02MGNhNjM2MTU0MTUxIzAhBgNV\nBAMTGkdvb2dsZSBDbG91ZCBTUUwgU2VydmVyIENBMRQwEgYDVQQKEwtHb29nbGUs\nIEluYzELMAkGA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB\nAQC2SP63xQumhjwrwEo8yZ6fiwOSHNyqdWbQSB2Prf6Rz3hvXeEdSHvCPFEO9HZ5\nv3y1qsuntkoEflFZw/2keEyy8U2MgpWloepjgAVpnLKlzrDLQV/06ww2wg73dHbr\n0OFySihZfsrXC8dT2mJ2njI4XRUS364HlxCLQ+Ws/ayZM2FOxV5ZGtD3tDm2Nbp4\nByp4vI+SOWnl1/q5x/6P6f1YLFQK2EsXNw6K5TcxzY8eeMhT6xkFBtFuKaHvO9zX\nNepF5nb3baBUGuaIjgYSpOgvjKosIhLqRm92dxGfZd8qtxl8QDa92roxyaS4dgfV\n1DRlLgLR2FocRZnxJkV++X79AgMBAAGjFjAUMBIGA1UdEwEB/wQIMAYBAf8CAQAw\nDQYJKoZIhvcNAQELBQADggEBAFCvJyLjE5npTD8vfjinn8JhkF4pVxCX5vU4eHc8\n1A5NNNEuZtF0GEA2xEB62HLrcyVam47NudS6eWhl8mCVvS0pyMV2ndgNtik3vwkI\nxqxm5rSiWJmdC6mdJ33HmEL/k5OOZxV8GvDalwT7zSho13Rfu32+0+LIB4tXzOvV\nDoHgjcYRfr716cgRlI5a0qkVL2ro+Omp7FCV4cDNRuHtcXeInNRhPwoS9K5c4Q5l\niQpDTCREFdHt0v9dQy69Dto+5eHHPXl3plGl5Vz7kElztGONEzGcNKqS8M/PPreP\n7yaMthSsImWyjObnz7mQTU7JXY5Tu+3tcx5w+aPUClQyEH8=\n-----END CERTIFICATE-----",
+                "common_name": "C=US,O=Google\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=4ba935a0-51f3-4fbf-adb6-60ca63615415",
+                "create_time": "2025-03-07T16:42:56.106Z",
+                "expiration_time": "2035-03-05T16:43:56.106Z",
+                "sha1_fingerprint": "86da2735a9f9383fb35e4d6e05cdc8ee2f6dc07b"
+              }
+            ],
+            "service_account_email_address": "p945635315103-fxrl6s@gcp-sa-cloud-sql.iam.gserviceaccount.com",
+            "settings": [
+              {
+                "activation_policy": "ALWAYS",
+                "active_directory_config": [],
+                "advanced_machine_features": [],
+                "availability_type": "ZONAL",
+                "backup_configuration": [
+                  {
+                    "backup_retention_settings": [
+                      {
+                        "retained_backups": 7,
+                        "retention_unit": "COUNT"
+                      }
+                    ],
+                    "binary_log_enabled": false,
+                    "enabled": false,
+                    "location": "",
+                    "point_in_time_recovery_enabled": false,
+                    "start_time": "06:00",
+                    "transaction_log_retention_days": 7
+                  }
+                ],
+                "collation": "",
+                "connector_enforcement": "NOT_REQUIRED",
+                "data_cache_config": [],
+                "database_flags": [],
+                "deletion_protection_enabled": false,
+                "deny_maintenance_period": [],
+                "disk_autoresize": true,
+                "disk_autoresize_limit": 0,
+                "disk_size": 10,
+                "disk_type": "PD_SSD",
+                "edition": "",
+                "insights_config": [],
+                "ip_configuration": [
+                  {
+                    "allocated_ip_range": "",
+                    "authorized_networks": [],
+                    "enable_private_path_for_google_cloud_services": false,
+                    "ipv4_enabled": true,
+                    "private_network": "",
+                    "psc_config": [],
+                    "require_ssl": false
+                  }
+                ],
+                "location_preference": [
+                  {
+                    "follow_gae_application": "",
+                    "secondary_zone": "",
+                    "zone": "us-central1-c"
+                  }
+                ],
+                "maintenance_window": [],
+                "password_validation_policy": [],
+                "pricing_plan": "PER_USE",
+                "sql_server_audit_config": [],
+                "tier": "db-f1-micro",
+                "time_zone": "",
+                "user_labels": {},
+                "version": 6
+              }
+            ],
+            "timeouts": {
+              "create": null,
+              "delete": null,
+              "update": null
+            }
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "root_password"
+              }
+            ]
+          ],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoyNDAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInVwZGF0ZSI6MTgwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMCJ9"
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

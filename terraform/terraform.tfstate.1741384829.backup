@@ -1,0 +1,110 @@
+{
+  "version": 4,
+  "terraform_version": "1.11.1",
+  "serial": 41,
+  "lineage": "eca31391-54ee-7aff-e179-48ba39b9d849",
+  "outputs": {
+    "cloud_run_url": {
+      "value": "",
+      "type": "string"
+    },
+    "database_instance_connection": {
+      "value": "trading90:us-central1:trading-ai-db",
+      "type": "string"
+    },
+    "database_public_ip": {
+      "value": "34.27.202.251",
+      "type": "string"
+    },
+    "storage_bucket_name": {
+      "value": "trading90-trading-ai-bucket",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "google_logging_metric",
+      "name": "error_count",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket_name": "",
+            "bucket_options": [],
+            "description": "",
+            "disabled": false,
+            "filter": "resource.type=\"cloud_run_revision\" severity\u003e=ERROR",
+            "id": "trading-ai-error-logs",
+            "label_extractors": {},
+            "metric_descriptor": [
+              {
+                "display_name": "",
+                "labels": [],
+                "metric_kind": "DELTA",
+                "unit": "1",
+                "value_type": "INT64"
+              }
+            ],
+            "name": "trading-ai-error-logs",
+            "project": "trading90",
+            "timeouts": null,
+            "value_extractor": ""
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "google_storage_bucket",
+      "name": "trading_ai",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "autoclass": [],
+            "cors": [],
+            "custom_placement_config": [],
+            "default_event_based_hold": false,
+            "encryption": [],
+            "force_destroy": false,
+            "id": "trading90-trading-ai-bucket",
+            "labels": {},
+            "lifecycle_rule": [],
+            "location": "US-CENTRAL1",
+            "logging": [],
+            "name": "trading90-trading-ai-bucket",
+            "project": "trading90",
+            "public_access_prevention": "inherited",
+            "requester_pays": false,
+            "retention_policy": [],
+            "self_link": "https://www.googleapis.com/storage/v1/b/trading90-trading-ai-bucket",
+            "soft_delete_policy": [
+              {
+                "effective_time": "2025-03-07T19:55:37.805Z",
+                "retention_duration_seconds": 604800
+              }
+            ],
+            "storage_class": "STANDARD",
+            "timeouts": {
+              "create": null,
+              "read": null,
+              "update": null
+            },
+            "uniform_bucket_level_access": false,
+            "url": "gs://trading90-trading-ai-bucket",
+            "versioning": [],
+            "website": []
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsInJlYWQiOjI0MDAwMDAwMDAwMCwidXBkYXRlIjoyNDAwMDAwMDAwMDB9LCJzY2hlbWFfdmVyc2lvbiI6IjAifQ=="
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

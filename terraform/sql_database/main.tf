@@ -32,7 +32,9 @@ resource "google_sql_database_instance" "trading_ai" {
   name             = var.db_instance_name
   project          = var.project_id
   region           = var.region
-  database_version = "MYSQL_8_0"
+  database_version = "POSTGRES_13"  # corretto da MYSQL_8_0
+
+  deletion_protection = false  # aggiunto per permettere la cancellazione
 
   settings {
     tier = "db-f1-micro"
