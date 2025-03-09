@@ -32,6 +32,7 @@ steps:
         gcloud logs read --resource-type=cloud_run_revision --service=${_SERVICE} --limit=50
 
 substitutions:
+  _PROJECT_ID: 'trading90'  # 🔹 Aggiunto
   _REGION: 'us-central1'
   _SERVICE: 'trading-ai-service'
   _REPOSITORY: 'trading-ai-repo'
