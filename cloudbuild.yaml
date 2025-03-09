@@ -4,23 +4,24 @@ steps:
     args:
       - 'build'
       - '-t'
-      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
       - '.'
 
   # 🔹 2️⃣ Push dell'immagine su Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
 
-  # 🔹 3️⃣ Deploy su Cloud Run
+  # 🔹 3️⃣ Deploy su Cloud Run (fixato)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: "gcloud"
     args:
       - 'run'
       - 'deploy'
       - '${_SERVICE}'
       - '--image'
-      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
       - '--region'
       - '${_REGION}'
       - '--platform'
@@ -31,8 +32,10 @@ steps:
 
 substitutions:
   _REGION: 'us-central1'
+  _PROJECT_ID: 'trading90'  # 🔹 Assicurati di inserire il tuo ID progetto GCP
   _SERVICE: 'trading-ai-service'
   _REPOSITORY: 'trading-ai-repo'
 
 images:
-  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
+  - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest'
+
