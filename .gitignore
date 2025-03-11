@@ -1,18 +1,67 @@
+# Environment variables and secrets
+.env
+*.env
+.env.*
+!.env-template
+*.pem
+*.key
+*_key.json
+github-actions-key.json
+terraform/credentials.json
+
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+trading_env/
+ENV/
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Logs and databases
+logs/
 *.log
 *.sqlite3
-venv/
+*.db
+
+# Google Cloud
 google-cloud-sdk/
-google-cloud-sdk-441.0.0-linux-x86_64.tar.gz
-venv/
-google-cloud-sdk/
-google-cloud-sdk-441.0.0-linux-x86_64.tar.gz
-google-cloud-sdk/bin/anthoscli
-github-actions-key.json
+google-cloud-sdk-*.tar.gz
 .github/log/
 
-terraform/credentials.json
+# Terraform
 terraform/.terraform/
+terraform/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+.terraformrc
+terraform.rc
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ML models (uncomment if needed)
+# models/*.pkl
+# *.model

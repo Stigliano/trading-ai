@@ -1,5 +1,40 @@
-fastapi
-uvicorn
-gunicorn
-joblib
-xgboost
+# API e server
+fastapi~=0.109.0
+flask~=3.1.0
+uvicorn~=0.27.0
+gunicorn~=22.0.0
+
+# Data science
+numpy~=1.26.3
+pandas~=2.2.0
+scikit-learn~=1.4.0
+xgboost~=2.0.3
+matplotlib~=3.8.2
+seaborn~=0.13.1
+
+# Reinforcement Learning
+stable-baselines3~=2.2.1
+gym~=0.26.0
+
+# Utilities
+joblib~=1.4.0
+requests~=2.31.0
+python-dotenv~=1.0.0
+
+# Database
+sqlalchemy~=2.0.30
+psycopg2-binary~=2.9.9
+alembic~=1.13.1
+
+# Google Cloud
+google-cloud-storage~=3.1.0
+google-cloud-secret-manager~=2.19.0
+google-api-python-client~=2.118.0
+
+# Testing
+pytest~=8.0.0
+pytest-cov~=4.1.0
+
+# Monitoring e logging
+prometheus-client~=0.19.0
+logging-formatter-anticrlf~=1.2.0
