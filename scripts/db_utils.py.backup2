@@ -146,33 +146,28 @@ def normalize_dataframe_for_db(df):
     
     return normalized_df
 
-
 def prepare_market_data_for_db(df, symbol):
-    """Prepara specificamente i dati di mercato per il database."""
+    """
+    Prepara specificamente i dati di mercato per il database.
+    """
     # Crea un nuovo DataFrame con le colonne corrette
     result_df = pd.DataFrame()
     
-    # Estrai la data/datetime e assicurati che sia in formato datetime
-    if df.index.name in ["Date", "date", "Datetime", "datetime", None] and isinstance(df.index, pd.DatetimeIndex):
-        # L'indice è già un DatetimeIndex
-        result_df["date"] = df.index
-    elif "Date" in df.columns:
-        result_df["date"] = pd.to_datetime(df["Date"])
-    elif "date" in df.columns:
-        result_df["date"] = pd.to_datetime(df["date"])
-    else:
-        # Crea una data utilizzando l'indice numerico
-        start_date = datetime(2023, 1, 1)
-        result_df["date"] = [start_date + timedelta(days=int(idx)) for idx in range(len(df))]
-        logger.warning(f"Nessuna colonna data trovata per {symbol}, utilizzando date generate")
+    # Estrai la data/datetime
+    if df.index.name in ['Date', 'date', 'Datetime', 'datetime', None]:
+        result_df['date'] = df.index
+    elif 'Date' in df.columns:
+        result_df['date'] = df['Date']
+    elif 'date' in df.columns:
+        result_df['date'] = df['date']
     
     # Mappa le colonne principali
     col_mapping = {
-        "open": ["Open", f"Open_{symbol}", "open"],
-        "high": ["High", f"High_{symbol}", "high"],
-        "low": ["Low", f"Low_{symbol}", "low"],
-        "close": ["Close", f"Close_{symbol}", "close"],
-        "volume": ["Volume", f"Volume_{symbol}", "volume"]
+        'open': ['Open', f'Open_{symbol}', 'open'],
+        'high': ['High', f'High_{symbol}', 'high'],
+        'low': ['Low', f'Low_{symbol}', 'low'],
+        'close': ['Close', f'Close_{symbol}', 'close'],
+        'volume': ['Volume', f'Volume_{symbol}', 'volume']
     }
     
     for target_col, source_cols in col_mapping.items():
@@ -182,23 +177,22 @@ def prepare_market_data_for_db(df, symbol):
                 break
     
     # Assicurati che le colonne numeriche siano tipi di dati corretti
-    numeric_cols = ["open", "high", "low", "close", "volume"]
+    numeric_cols = ['open', 'high', 'low', 'close', 'volume']
     for col in numeric_cols:
         if col in result_df.columns:
-            result_df[col] = pd.to_numeric(result_df[col], errors="coerce")
+            result_df[col] = pd.to_numeric(result_df[col], errors='coerce')
     
     # Aggiungi simbolo e fonte
-    result_df["symbol"] = symbol
-    if "source" in df.columns:
-        result_df["source"] = df["source"]
+    result_df['symbol'] = symbol
+    if 'source' in df.columns:
+        result_df['source'] = df['source']
     else:
-        result_df["source"] = "yahoo_finance"
+        result_df['source'] = 'yahoo_finance'
     
     # Aggiungi timestamp
-    result_df["created_at"] = datetime.now()
+    result_df['created_at'] = datetime.now()
     
     return result_df
-
 
 def convert_series_to_float(value):
     """Converte un oggetto Series in float, se possibile."""

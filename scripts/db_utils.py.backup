@@ -1,0 +1,414 @@
+"""
+Utility per la connessione e gestione del database PostgreSQL.
+"""
+
+import os
+import logging
+import pandas as pd
+import numpy as np
+from sqlalchemy import create_engine, Table, Column, Integer, Float, String, DateTime, MetaData, text
+from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
+from dotenv import load_dotenv
+from contextlib import contextmanager
+
+# Configurazione logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger('db_utils')
+
+# Carica variabili d'ambiente
+load_dotenv()
+
+def get_db_engine():
+    """
+    Crea e restituisce un engine SQLAlchemy per la connessione al database PostgreSQL.
+    Se le credenziali non sono configurate, restituisce None.
+    """
+    db_user = os.getenv('DB_USER')
+    db_password = os.getenv('DB_PASSWORD')
+    db_host = os.getenv('DB_HOST')
+    db_port = os.getenv('DB_PORT', '5432')
+    db_name = os.getenv('DB_NAME')
+
+    # Verifica se i parametri del database sono stati forniti
+    if not all([db_user, db_password, db_host, db_name]):
+        logger.warning("⚠️ Configurazione database incompleta. Modalità file locale attivata.")
+        return None
+
+    # Se tutte le credenziali sono presenti, crea la connessione
+    connection_string = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    logger.info(f"Creazione engine per database {db_name} su {db_host}")
+    
+    try:
+        engine = create_engine(connection_string)
+        return engine
+    except Exception as e:
+        logger.error(f"Errore nella creazione dell'engine: {str(e)}")
+        return None
+
+@contextmanager
+def get_db_connection():
+    """
+    Context manager per la connessione al database.
+    Gestisce la connessione e rilascia le risorse quando terminato.
+    """
+    engine = get_db_engine()
+    connection = None
+    try:
+        if engine is None:
+            logger.warning("⚠️ Engine del database non disponibile.")
+            yield None
+            return
+            
+        connection = engine.connect()
+        logger.info("Connessione al database stabilita con successo.")
+        yield connection
+    except SQLAlchemyError as e:
+        logger.error(f"Errore durante la connessione al database: {str(e)}")
+        raise
+    finally:
+        if connection:
+            connection.close()
+            logger.info("Connessione al database chiusa.")
+
+def normalize_dataframe_for_db(df, table_name):
+    """
+    Normalizza un DataFrame per renderlo compatibile con la struttura del database.
+    """
+    # Crea una copia per evitare modifiche all'originale
+    normalized_df = df.copy()
+    
+    # Gestisci le colonne con indice multiplo
+    if isinstance(normalized_df.columns, pd.MultiIndex):
+        # Appiattisci le colonne multiindice
+        normalized_df.columns = [f"{col[0]}_{col[1]}" if col[1] else col[0] for col in normalized_df.columns]
+    
+    # Mappa i nomi delle colonne alla struttura del database
+    column_mappings = {
+        # Mappa per stock_daily_prices
+        'Date': 'date',
+        'Datetime': 'datetime',
+        'date_time': 'datetime',
+        'Open': 'open',
+        'High': 'high',
+        'Low': 'low',
+        'Close': 'close',
+        'Volume': 'volume',
+        'Symbol': 'symbol',
+        'Source': 'source',
+        
+        # Per colonne con prefisso del simbolo
+        'Open_SPY': 'open',
+        'High_SPY': 'high',
+        'Low_SPY': 'low',
+        'Close_SPY': 'close',
+        'Volume_SPY': 'volume',
+        
+        'Open_QQQ': 'open',
+        'High_QQQ': 'high',
+        'Low_QQQ': 'low',
+        'Close_QQQ': 'close',
+        'Volume_QQQ': 'volume',
+        
+        'Open_AAPL': 'open',
+        'High_AAPL': 'high',
+        'Low_AAPL': 'low',
+        'Close_AAPL': 'close',
+        'Volume_AAPL': 'volume',
+        
+        'Open_MSFT': 'open',
+        'High_MSFT': 'high',
+        'Low_MSFT': 'low',
+        'Close_MSFT': 'close',
+        'Volume_MSFT': 'volume',
+        
+        'Open_GOOGL': 'open',
+        'High_GOOGL': 'high',
+        'Low_GOOGL': 'low',
+        'Close_GOOGL': 'close',
+        'Volume_GOOGL': 'volume'
+    }
+    
+    # Rinomina colonne basate sulla mappatura
+    for old_name, new_name in column_mappings.items():
+        if old_name in normalized_df.columns:
+            normalized_df.rename(columns={old_name: new_name}, inplace=True)
+    
+    # Rimuovi colonne duplicate se presenti
+    normalized_df = normalized_df.loc[:, ~normalized_df.columns.duplicated()]
+    
+    # Gestisci particolarità delle tabelle
+    if table_name == 'stock_daily_prices':
+        required_cols = ['date', 'open', 'high', 'low', 'close', 'volume', 'symbol']
+        for col in required_cols:
+            if col not in normalized_df.columns:
+                if col == 'date' and 'Date' in normalized_df.columns:
+                    normalized_df['date'] = normalized_df['Date']
+                elif col == 'symbol' and not any(c == 'symbol' for c in normalized_df.columns):
+                    # Estrai simbolo dalle colonne se possibile
+                    symbol_cols = [c for c in normalized_df.columns if '_' in c and c.split('_')[1] in ['SPY', 'QQQ', 'AAPL', 'MSFT', 'GOOGL']]
+                    if symbol_cols:
+                        normalized_df['symbol'] = symbol_cols[0].split('_')[1]
+    
+    return normalized_df
+
+def prepare_market_data_for_db(df, symbol):
+    """
+    Prepara specificamente i dati di mercato per il database.
+    """
+    # Crea un nuovo DataFrame con le colonne corrette
+    result_df = pd.DataFrame()
+    
+    # Estrai la data/datetime
+    if df.index.name in ['Date', 'date', 'Datetime', 'datetime', None]:
+        result_df['date'] = df.index
+    elif 'Date' in df.columns:
+        result_df['date'] = df['Date']
+    elif 'date' in df.columns:
+        result_df['date'] = df['date']
+    
+    # Mappa le colonne principali
+    col_mapping = {
+        'open': ['Open', f'Open_{symbol}', 'open'],
+        'high': ['High', f'High_{symbol}', 'high'],
+        'low': ['Low', f'Low_{symbol}', 'low'],
+        'close': ['Close', f'Close_{symbol}', 'close'],
+        'volume': ['Volume', f'Volume_{symbol}', 'volume']
+    }
+    
+    for target_col, source_cols in col_mapping.items():
+        for src_col in source_cols:
+            if src_col in df.columns:
+                result_df[target_col] = df[src_col]
+                break
+    
+    # Aggiungi simbolo e fonte
+    result_df['symbol'] = symbol
+    if 'source' in df.columns:
+        result_df['source'] = df['source']
+    else:
+        result_df['source'] = 'yahoo_finance'
+    
+    # Aggiungi timestamp
+    result_df['created_at'] = datetime.now()
+    
+    return result_df
+
+def save_dataframe_to_db(df, table_name, engine=None):
+    """
+    Salva un DataFrame nel database.
+    
+    Args:
+        df (pandas.DataFrame): DataFrame con i dati da salvare
+        table_name (str): Nome della tabella nel database
+        engine (sqlalchemy.engine.Engine, optional): Engine SQLAlchemy. Se None, ne viene creato uno nuovo.
+    
+    Returns:
+        bool: True se il salvataggio è avvenuto con successo, False altrimenti
+    """
+    if df is None or df.empty:
+        logger.warning("DataFrame vuoto o None. Nessun dato da salvare.")
+        return False
+
+    # Crea una copia del dataframe per evitare modifiche all'originale
+    df_copy = df.copy()
+    
+    # Se non viene fornito un engine, ne crea uno nuovo
+    close_engine = False
+    if engine is None:
+        try:
+            engine = get_db_engine()
+            close_engine = True
+            if engine is None:
+                logger.info(f"⚠️ Database non disponibile. Salvataggio solo su file.")
+                # Assicurati che la directory data esista
+                os.makedirs("data", exist_ok=True)
+                # Salva su file CSV
+                filename = f"data/{table_name}_{datetime.now().strftime('%Y%m%d')}.csv"
+                df_copy.to_csv(filename, index=False)
+                logger.info(f"✅ Dati salvati in {filename}")
+                return True
+        except Exception as e:
+            logger.error(f"Errore nella creazione dell'engine: {str(e)}")
+            return False
+    
+    try:
+        # Gestione speciale per dati di mercato
+        if table_name == 'stock_daily_prices':
+            # Determina il simbolo
+            if 'symbol' in df_copy.columns:
+                symbol = df_copy['symbol'].iloc[0]
+            else:
+                # Cerca di identificare il simbolo dalle colonne
+                potential_symbols = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'GOOGL']
+                for sym in potential_symbols:
+                    if any(sym in col for col in df_copy.columns):
+                        symbol = sym
+                        break
+                else:
+                    symbol = 'UNKNOWN'
+            
+            # Prepara i dati
+            prepared_df = prepare_market_data_for_db(df_copy, symbol)
+            
+            # Salva nel database
+            prepared_df.to_sql(table_name, con=engine, if_exists='append', index=False)
+            logger.info(f"✅ {len(prepared_df)} righe salvate nella tabella {table_name}")
+            return True
+        
+        # Gestione speciale per dati fondamentali info
+        elif table_name == "fundamental_info":
+            # Gestisci il caso speciale dei dati fondamentali info
+            rows = []
+            try:
+                # Determina il simbolo
+                if "symbol" in df_copy.columns:
+                    symbol = df_copy["symbol"].iloc[0]
+                else:
+                    symbol = "UNKNOWN"
+                
+                # Appiattisci tutti i dati in coppie chiave-valore
+                for _, row in df_copy.iterrows():
+                    # Gestisci lista di dizionari o dizionario singolo
+                    for col in row.index:
+                        val = row[col]
+                        # Salta symbol e created_at
+                        if col in ["symbol", "created_at"]:
+                            continue
+                            
+                        # Gestisci dizionari e liste annidati
+                        if isinstance(val, dict):
+                            # Appiattisci il dizionario
+                            for k, v in val.items():
+                                if v is not None and not pd.isna(v):
+                                    rows.append({
+                                        "symbol": symbol,
+                                        "key": f"{col}.{k}",
+                                        "value": str(v),
+                                        "created_at": datetime.now()
+                                    })
+                        elif isinstance(val, list):
+                            # Converti lista in stringa JSON
+                            rows.append({
+                                "symbol": symbol,
+                                "key": col,
+                                "value": str(val),
+                                "created_at": datetime.now()
+                            })
+                        else:
+                            # Valore semplice
+                            if val is not None and not pd.isna(val):
+                                rows.append({
+                                    "symbol": symbol,
+                                    "key": col,
+                                    "value": str(val),
+                                    "created_at": datetime.now()
+                                })
+                
+                if rows:
+                    # Crea DataFrame con le righe appiattite
+                    info_df = pd.DataFrame(rows)
+                    # Salva nel database
+                    info_df.to_sql(table_name, con=engine, if_exists="append", index=False)
+                    logger.info(f"✅ {len(info_df)} righe salvate nella tabella {table_name}")
+                    return True
+                else:
+                    logger.warning(f"⚠️ Nessun dato valido da salvare nella tabella {table_name}")
+                    return False
+            except Exception as e:
+                logger.error(f"❌ Errore durante il salvataggio dei dati fondamentali info: {str(e)}")
+                return False
+            
+        # Gestione speciale per dati fondamentali finanziari
+        elif table_name.startswith('fundamental_') and table_name != 'fundamental_info':
+            # Assicurati che i dati siano nel formato corretto
+            if not df_copy.empty:
+                # Se non è già nel formato giusto, trasforma in formato lungo
+                if len(df_copy.columns) > 5:  # Ha molte colonne, quindi probabilmente in formato ampio
+                    # Identifica colonne non numeriche
+                    try:
+                        id_cols = ['symbol']
+                        if 'date' in df_copy.columns:
+                            id_cols.append('date')
+                        
+                        # Converti in formato lungo
+                        melted_df = pd.melt(
+                            df_copy, 
+                            id_vars=id_cols,
+                            var_name='metric',
+                            value_name='value'
+                        )
+                        
+                        # Filtra valori nulli
+                        melted_df = melted_df.dropna(subset=['value'])
+                        
+                        # Converti valori in float dove possibile
+                        melted_df['value'] = pd.to_numeric(melted_df['value'], errors='coerce')
+                        
+                        # Aggiungi timestamp
+                        melted_df['created_at'] = datetime.now()
+                        
+                        if not melted_df.empty:
+                            melted_df.to_sql(table_name, con=engine, if_exists='append', index=False)
+                            logger.info(f"✅ {len(melted_df)} righe salvate nella tabella {table_name}")
+                            return True
+                    except Exception as e:
+                        logger.error(f"Errore durante la trasformazione dei dati fondamentali: {str(e)}")
+            return False
+            
+        # Gestione standard per altri tipi di dati
+        else:
+            # Normalizza il DataFrame per il database
+            normalized_df = normalize_dataframe_for_db(df_copy, table_name)
+            
+            # Salva nel database
+            normalized_df.to_sql(table_name, con=engine, if_exists='append', index=False)
+            logger.info(f"✅ {len(normalized_df)} righe salvate nella tabella {table_name}")
+            return True
+        
+    except Exception as e:
+        logger.error(f"❌ Errore durante il salvataggio dei dati: {str(e)}")
+        return False
+        
+    finally:
+        if close_engine and engine:
+            engine.dispose()
+
+def check_db_connection():
+    """
+    Verifica la connessione al database.
+    
+    Returns:
+        bool: True se la connessione è stata stabilita con successo, False altrimenti
+    """
+    try:
+        with get_db_connection() as conn:
+            if conn is None:
+                logger.warning("⚠️ Database non disponibile")
+                return False
+                
+            # Esegui una query di test
+            result = conn.execute(text("SELECT 1"))
+            row = result.fetchone()
+            if row and row[0] == 1:
+                logger.info("✅ Connessione al database verificata con successo")
+                return True
+            else:
+                logger.error("❌ Errore durante la verifica della connessione al database")
+                return False
+    except Exception as e:
+        logger.error(f"❌ Errore durante la verifica della connessione al database: {str(e)}")
+        return False
+
+if __name__ == "__main__":
+    # Test di connessione
+    try:
+        if check_db_connection():
+            print("✅ Connessione al database stabilita con successo!")
+        else:
+            print("❌ Impossibile connettersi al database o database non configurato.")
+    except Exception as e:
+        print(f"❌ Errore: {str(e)}")

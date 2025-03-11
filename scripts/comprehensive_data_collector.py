@@ -159,7 +159,7 @@ def get_news_sentiment(symbol, limit=10):
             
             news_items = []
             # Estrazione basica delle notizie (adatta in base alla struttura HTML)
-            articles = soup.select('div.Ov\(h\) Pend\(44px\)') or soup.select('h3.Mb\(5px\)')
+            articles = soup.select('div.headline') or soup.select('h3')
             
             for article in articles[:limit]:
                 try:
@@ -299,6 +299,55 @@ def get_sector_performance():
         except ImportError:
             logger.error("yfinance non installato. Installare con: pip install yfinance")
             return None
+        
+        # ETF che rappresentano diversi settori
+        sector_etfs = {
+            "XLF": "Financial",
+            "XLK": "Technology",
+            "XLE": "Energy",
+            "XLV": "Healthcare",
+            "XLI": "Industrial",
+            "XLP": "Consumer Staples",
+            "XLY": "Consumer Discretionary",
+            "XLB": "Materials",
+            "XLU": "Utilities",
+            "XLRE": "Real Estate"
+        }
+        
+        # Ottieni i dati di performance
+        performance_data = []
+        for etf, sector in sector_etfs.items():
+            try:
+                data = yf.download(etf, period="1mo", interval="1d", progress=False)
+                if not data.empty:
+                    # Calcola la performance
+                    first_close = float(data["Close"].iloc[0])
+                    last_close = float(data["Close"].iloc[-1])
+                    perf_1mo = ((last_close / first_close) - 1) * 100
+                    
+                    # Aggiungi alla lista
+                    performance_data.append({
+                        "sector": sector,
+                        "etf": etf,
+                        "performance_1mo": perf_1mo,
+                        "last_price": last_close,
+                        "date": data.index[-1]
+                    })
+                    
+                    time.sleep(0.5)  # Previeni rate limiting
+            except Exception as e:
+                logger.error(f"❌ Errore per settore {sector}: {str(e)}")
+        
+        if performance_data:
+            performance_df = pd.DataFrame(performance_data)
+            logger.info(f"✅ Raccolti dati performance per {len(performance_df)} settori")
+            return performance_df
+        else:
+            return None
+            
+    except Exception as e:
+        logger.error(f"❌ Errore durante la raccolta dati settoriali: {str(e)}")
+        return None
         
         # ETF che rappresentano diversi settori
         sector_etfs = {
